@@ -16,7 +16,22 @@
 
 int majorityElement(int* nums, int numsSize) {
      // TODO: implement
+     // will use boyer-moore algorithm to address the floor of n/2
+     int candidate = 0;
+     
+     int count = 0;
 
+     for (int i = 0; i < numsSize; i++) {
+          if (count == 0) {
+               candidate = nums[i];
+          }
 
+          if (nums[i] == candidate) {
+               count++;
+          } else {
+               count--;
+          }
+     }
 
+     return candidate;
 }
