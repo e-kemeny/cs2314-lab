@@ -36,23 +36,16 @@ You may use this structure if you want to build your own hash table.
 key   -> the number from the array
 value -> the index of that number
 */
+
+
 typedef struct Node {
     int key;
     int value;
     struct Node* next;
 } Node;
 
-/*
-Optional table size for a simple hash table implementation.
-You may change this value if needed.
-*/
 #define TABLE_SIZE 1009
 
-/*
-Optional helper function declarations.
-
-You may use them, modify them, or remove them if you prefer your own design.
-*/
 static int hash(int key);
 static void insert(Node* table[], int key, int value);
 static int find(Node* table[], int key, int* value);
@@ -63,40 +56,60 @@ Return an array of size 2 containing the indices of the two numbers
 whose sum equals target.
 */
 int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
-    /* Write your code here */
+    Node* table[TABLE_SIZE] = {0};
+    int* result = (int*)malloc(sizeof(int) * 2);
+    *returnSize = 2;
 
-    *returnSize = 0;
+    for (int i = 0; i < numsSize; i++) {
+        int complement = target - nums[i];
+        int foundIndex;
+        if (find(table, complement, &foundIndex)) {
+            result[0] = foundIndex;
+            result[1] = i;
+            freeTable(table);
+            return result;
+        }
+        insert(table, nums[i], i);
+    }
+
     return NULL;
 }
 
-/*
-Optional helper: compute a hash index for a key.
-*/
 static int hash(int key) {
-    /* Write your code here if you use this helper */
-    return 0;
+    
+    return ((key % TABLE_SIZE) + TABLE_SIZE) % TABLE_SIZE;
 }
 
-/*
-Optional helper: insert (key, value) into the hash table.
-*/
 static void insert(Node* table[], int key, int value) {
-    /* Write your code here if you use this helper */
+    int index = hash(key);
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->key = key;
+    newNode->value = value;
+    newNode->next = table[index];
+    table[index] = newNode;
 }
 
-/*
-Optional helper: search for key in the hash table.
-If found, store the associated value in *value and return 1.
-Otherwise return 0.
-*/
 static int find(Node* table[], int key, int* value) {
-    /* Write your code here if you use this helper */
+    int index = hash(key);
+    Node* current = table[index];
+    while (current != NULL) {
+        if (current->key == key) {
+            *value = current->value;
+            return 1;
+        }
+        current = current->next;
+    }
     return 0;
 }
 
-/*
-Optional helper: free all memory used by the hash table.
-*/
 static void freeTable(Node* table[]) {
-    /* Write your code here if you use this helper */
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        Node* current = table[i];
+        Node* next;
+        while (current != NULL) {
+            next = current->next;
+            free(current);
+            current = next;
+        }
+    }
 }
